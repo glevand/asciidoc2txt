@@ -1,0 +1,62 @@
+// general
+:url-wikipedia: https://en.wikipedia.org/wiki/Richard_Nixon
+:url-library: https://www.nixonlibrary.gov
+
+:url-cic: https://en.wikipedia.org/wiki/Commander-in-chief
+:url-china: https://en.wikipedia.org/wiki/1972_Nixon_visit_to_China
+:url-condor: https://en.wikipedia.org/wiki/Operation_Condor
+:url-watergate: https://en.wikipedia.org/wiki/Watergate_scandal
+:url-checkers: https://en.wikipedia.org/wiki/Checkers_speech
+:url-price: https://www.conservapedia.com/Office_of_Price_Administration
+
+:notitle:
+:nofooter:
+
+= Richard M. Nixon Resume
+
+[%hardbreaks]
+Richard M. Nixon
+Deceased
+Yorba Linda, California, USA
+dick@nixon.net
+
+37th President.  Ended American involvement in the Vietnam War in 1973.  Watergate scandal.
+
+Remember, always give your best. Never get discouraged. Never be petty. Always remember, others may hate you. But those who hate you don't win unless you hate them. And then you destroy yourself.
+
+ - {url-wikipedia}[{url-wikipedia}]
+ - {url-library}[{url-library}]
+
+[big]*PROFESSIONAL EXPERIENCE*
+
+*37TH PRESIDENT, UNITED STATES OF AMERICA* +
+  White House, Washington, D.C., January, 1969 to August, 1974
+
+Acted as the head of state. Fulfilled role of commander-in-chief.footnote:[{url-cic}]  Executed ping-pong diplomacy with a visit to China in 1972.footnote:[{url-china}]
+
+* Operation Condor.footnote:[{url-condor}]
+* Involved in Watergate scandal.footnote:[{url-watergate}]  Lead to resignation.
+
+*VICE PRESIDENT OF THE UNITED STATES OF AMERICA* +
+  White House, Washington, D.C., 1953 to 1961
+
+Republican Party running mate of Dwight D. Eisenhower.
+
+* Checkers Speech.footnote:[{url-checkers}]
+* Africa trip.
+
+*RATIONING CLERK* +
+   Office of Price Administration, Washington, D.C., January 1942 to June 1942
+
+Assigned to the tire rationing division.footnote:[{url-price}]
+
+* Verify rationing quotas, manufacturer outputs, dealer sales figures.
+* Respond to general inquiries.
+
+[big]*EDUCATION*
+
+[%hardbreaks]
+Bachelor of Arts, Whittier College, Whittier, California
+Duke University School of Law, Durham, North Carolina
+
+[big]*LINKS*
