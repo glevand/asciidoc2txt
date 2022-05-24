@@ -12,6 +12,8 @@ Option flags:
   -o --out-file - Output file. Default: '/dev/stdout'.
 ```
 
+See the [asciidoc reference](https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/) for syntax.
+
 ## Licence & Usage
 
 All files in the [asciidoc2txt project](https://github.com/glevand/asciidoc2txt), unless otherwise noted, are covered by an [MIT Plus License](https://github.com/glevand/asciidoc2txt/blob/master/mit-plus-license.txt).  The text of the license describes what usage is allowed.
