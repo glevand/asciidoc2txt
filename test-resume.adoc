@@ -11,6 +11,7 @@
 
 :notitle:
 :nofooter:
+:extended-version:
 
 = Richard M. Nixon Resume
 
@@ -45,6 +46,7 @@ Republican Party running mate of Dwight D. Eisenhower.
 * Checkers Speech.footnote:[{url-checkers}]
 * Africa trip.
 
+ifdef::extended-version[]
 *RATIONING CLERK* +
    Office of Price Administration, Washington, D.C., January 1942 to June 1942
 
@@ -52,6 +54,7 @@ Assigned to the tire rationing division.footnote:[{url-price}]
 
 * Verify rationing quotas, manufacturer outputs, dealer sales figures.
 * Respond to general inquiries.
+endif::extended-version[]
 
 [big]*EDUCATION*
 

@@ -4,19 +4,26 @@ usage() {
 	local old_xtrace
 	old_xtrace="$(shopt -po xtrace || :)"
 	set +o xtrace
-	echo "${script_name} - Convert asciidoc input to text." >&2
-	echo "Usage: ${script_name} [flags] [in-file|-]" >&2
-	echo "Option flags:" >&2
-	echo "  -h --help     - Show this help and exit." >&2
-	echo "  -v --verbose  - Verbose execution." >&2
-	echo "  -i --in-file  - Input file. Default: '${in_file}'." >&2
-	echo "  -o --out-file - Output file. Default: '${out_file}'." >&2
+
+	{
+		echo "${script_name} - Convert asciidoc input to text." >&2
+		echo "Usage: ${script_name} [flags] [in-file|-]" >&2
+		echo "Input file: '${in_file}'." >&2
+		echo "Option flags:" >&2
+#		echo "  -i --in-file  - Input file. Default: '${in_file}'." >&2
+		echo "  -o --out-file - Output file. Default: '${out_file}'." >&2
+		echo "  -h --help     - Show this help and exit."
+		echo "  -v --verbose  - Verbose execution. Default: '${verbose}'."
+		echo "  -g --debug    - Extra verbose execution. Default: '${debug}'."
+		echo "Info:"
+		print_project_info
+	} >&2
 	eval "${old_xtrace}"
 }
 
 process_opts() {
-	local short_opts="hvi:o:"
-	local long_opts="help,verbose,in-file:,out-file:"
+	local short_opts='i:o:hvg'
+	local long_opts='in-file:,out-file:,help,verbose,debug'
 
 	local opts
 	opts=$(getopt --options ${short_opts} --long ${long_opts} -n "${script_name}" -- "$@")
@@ -24,17 +31,8 @@ process_opts() {
 	eval set -- "${opts}"
 
 	while true ; do
-		#echo "${FUNCNAME[0]}: @${1}@ @${2}@"
+		# echo "${FUNCNAME[0]}: (${#}) '${*}'"
 		case "${1}" in
-		-h | --help)
-			usage=1
-			shift
-			;;
-		-v | --verbose)
-			#set -x
-			verbose=1
-			shift
-			;;
 		-i | --in-file)
 			in_file="${2}"
 			shift 2
@@ -43,17 +41,28 @@ process_opts() {
 			out_file="${2}"
 			shift 2
 			;;
+		-h | --help)
+			usage=1
+			shift
+			;;
+		-v | --verbose)
+			verbose=1
+			shift
+			;;
+		-g | --debug)
+			verbose=1
+			debug=1
+			keep_tmp_dir=1
+			set -x
+			shift
+			;;
 		--)
 			shift
-			if [[ ${1} ]]; then
-				in_file="${1}"
+			if [[ ${1:-} ]]; then
+				in_file="${1:-}"
 				shift
 			fi
-			if [[ ${1} ]]; then
-				echo "${script_name}: ERROR: Got extra opts: '${*}'" >&2
-				usage
-				exit 1
-			fi
+			extra_args="${*}"
 			break
 			;;
 		*)
@@ -64,38 +73,91 @@ process_opts() {
 	done
 }
 
+print_project_banner() {
+	echo "${script_name} (@PACKAGE_NAME@) - ${start_time}"
+}
+
+print_project_info() {
+	echo "  @PACKAGE_NAME@ ${script_name}"
+	echo "  Version: @PACKAGE_VERSION@"
+	echo "  Project Home: @PACKAGE_URL@"
+}
+
 on_exit() {
 	local result=${1}
+	local sec="${SECONDS}"
 
-	echo "${script_name}: Done: ${result}" >&2
+	set +x
+	echo "${script_name}: Done: ${result}, ${sec} sec." >&2
+}
+
+on_err() {
+	local f_name=${1}
+	local line_no=${2}
+	local err_no=${3}
+
+	keep_tmp_dir=1
+	echo "${script_name}: ERROR: function=${f_name}, line=${line_no}, result=${err_no}" >&2
+	exit "${err_no}"
 }
 
 #===============================================================================
-export PS4='\[\e[0;33m\]+ ${BASH_SOURCE##*/}:${LINENO}:(${FUNCNAME[0]:-"?"}):\[\e[0m\] '
+export PS4='\[\e[0;33m\]+ ${BASH_SOURCE##*/}:${LINENO}:(${FUNCNAME[0]:-main}):\[\e[0m\] '
 
 script_name="${0##*/}"
 
-trap "on_exit 'Failed.'" EXIT
-set -e
+SECONDS=0
+start_time="$(date +%Y.%m.%d-%H.%M.%S)"
+
+real_source="$(realpath "${BASH_SOURCE}")"
+SCRIPT_TOP="$(realpath "${SCRIPT_TOP:-${real_source%/*}}")"
+
+trap "on_exit 'Failed'" EXIT
+trap 'on_err ${FUNCNAME[0]:-main} ${LINENO} ${?}' ERR
+trap 'on_err SIGUSR1 ? 3' SIGUSR1
+
+set -eE
+set -o pipefail
+set -o nounset
+
+in_file='/dev/stdin'
+out_file=''
+usage=''
+verbose=''
+debug=''
+keep_tmp_dir=''
 
 process_opts "${@}"
 
-if [[ ! ${in_file} || "${in_file}" == '-' ]]; then
-	in_file='/dev/stdin'
+if [[ ! "${out_file}" ]]; then
+	if [[ -f "${in_file}" ]]; then
+		out_file=${in_file%.*}.txt
+	else
+		out_file="/dev/stdout"
+	fi
 fi
 
-if [[ ! ${out_file} && "${in_file}" == '/dev/stdin' ]] || [[ "${out_file}" == '-' ]]; then
+if [[ "${out_file}" == '-' ]]; then
 	out_file="/dev/stdout"
 fi
 
-if [[ ! ${out_file} ]]; then
-	out_file=${in_file%.*}.txt
+if [[ "${in_file}" == '-' ]]; then
+	in_file='/dev/stdin'
 fi
 
 if [[ ${usage} ]]; then
 	usage
 	trap - EXIT
 	exit 0
+fi
+
+print_project_banner >&2
+
+if [[ ${extra_args} ]]; then
+	set +o xtrace
+	echo "${script_name}: ERROR: Got extra args: '${extra_args}'" >&2
+	usage
+	exit 1
 fi
 
 if [[ -f ${in_file} ]]; then
@@ -113,6 +175,13 @@ echo -n '' > "${out_file}"
 in_header=1
 line_no=0
 fn_counter=0
+want_wxtended=''
+in_extended=''
+restart=''
+
+# :extended-version:
+# ifdef::extended-version[]
+# endif::extended-version[]
 
 while read -r line_in; do
 	((line_no += 1))
@@ -144,6 +213,12 @@ while read -r line_in; do
 			continue
 		fi
 
+		if [[ "${line_in}" == ':extended-version:' ]]; then
+			want_wxtended=1
+			[[ ${verbose} ]] && echo "[${line_no}] Set want_wxtended: '${line_in}'" >&2
+			continue
+		fi
+
 		remove_lines=(
 			':notitle:'
 			':nofooter:'
@@ -156,12 +231,29 @@ while read -r line_in; do
 			fi
 		done
 		if [[ ${restart} ]]; then
-			unset restart
+			restart=''
 			continue
 		fi
 
 		[[ ${verbose} ]] && echo "[${line_no}] exit header" >&2
-		unset in_header
+		in_header=''
+	fi
+
+	if [[ "${line_in}" == 'ifdef::extended-version[]' ]]; then
+		in_extended=1
+		[[ ${verbose} ]] && echo "[${line_no}] set in_extended: '${line_in}'" >&2
+		continue
+	fi
+
+	if [[ "${line_in}" == 'endif::extended-version[]' ]]; then
+		in_extended=''
+		[[ ${verbose} ]] && echo "[${line_no}] clear in_extended: '${line_in}'" >&2
+		continue
+	fi
+
+	if [[ ${in_extended} && ! ${want_wxtended} ]]; then
+		[[ ${verbose} ]] && echo "[${line_no}] skip extended: '${line_in}'" >&2
+		continue
 	fi
 
 	remove_lines=(
@@ -175,7 +267,7 @@ while read -r line_in; do
 		fi
 	done
 	if [[ ${restart} ]]; then
-		unset restart
+		restart=''
 		continue
 	fi
 
