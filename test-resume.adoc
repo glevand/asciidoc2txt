@@ -11,7 +11,7 @@
 
 :notitle:
 :nofooter:
-:extended-version:
+// :extended-version:
 
 = Richard M. Nixon Resume
 
@@ -54,8 +54,8 @@ Assigned to the tire rationing division.footnote:[{url-price}]
 
 * Verify rationing quotas, manufacturer outputs, dealer sales figures.
 * Respond to general inquiries.
-endif::extended-version[]
 
+endif::extended-version[]
 [big]*EDUCATION*
 
 [%hardbreaks]
