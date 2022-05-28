@@ -12,6 +12,7 @@ usage() {
 		echo "Option flags:" >&2
 #		echo "  -i --in-file  - Input file. Default: '${in_file}'." >&2
 		echo "  -o --out-file - Output file. Default: '${out_file}'." >&2
+		echo "  -e --extended - Enable extended output file. Default: '${want_extended}'." >&2
 		echo "  -h --help     - Show this help and exit."
 		echo "  -v --verbose  - Verbose execution. Default: '${verbose}'."
 		echo "  -g --debug    - Extra verbose execution. Default: '${debug}'."
@@ -22,8 +23,8 @@ usage() {
 }
 
 process_opts() {
-	local short_opts='i:o:hvg'
-	local long_opts='in-file:,out-file:,help,verbose,debug'
+	local short_opts='i:o:ehvg'
+	local long_opts='in-file:,out-file:,extended,help,verbose,debug'
 
 	local opts
 	opts=$(getopt --options ${short_opts} --long ${long_opts} -n "${script_name}" -- "$@")
@@ -40,6 +41,10 @@ process_opts() {
 		-o | --out-file)
 			out_file="${2}"
 			shift 2
+			;;
+		-e | --extended)
+			want_extended=1
+			shift
 			;;
 		-h | --help)
 			usage=1
@@ -122,6 +127,7 @@ set -o nounset
 
 in_file='/dev/stdin'
 out_file=''
+want_extended=''
 usage=''
 verbose=''
 debug=''
@@ -175,7 +181,6 @@ echo -n '' > "${out_file}"
 in_header=1
 line_no=0
 fn_counter=0
-want_wxtended=''
 in_extended=''
 restart=''
 
@@ -214,8 +219,8 @@ while read -r line_in; do
 		fi
 
 		if [[ "${line_in}" == ':extended-version:' ]]; then
-			want_wxtended=1
-			[[ ${verbose} ]] && echo "[${line_no}] Set want_wxtended: '${line_in}'" >&2
+			want_extended=1
+			[[ ${verbose} ]] && echo "[${line_no}] Set want_extended: '${line_in}'" >&2
 			continue
 		fi
 
@@ -251,7 +256,7 @@ while read -r line_in; do
 		continue
 	fi
 
-	if [[ ${in_extended} && ! ${want_wxtended} ]]; then
+	if [[ ${in_extended} && ! ${want_extended} ]]; then
 		[[ ${verbose} ]] && echo "[${line_no}] skip extended: '${line_in}'" >&2
 		continue
 	fi
