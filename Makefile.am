@@ -51,7 +51,7 @@ test-resume.pdf: % : Makefile asciidoc2txt.sh test-resume.adoc
 	echo "Generating '$@'"
 	asciidoctor-pdf -v test-resume.adoc
 
-test_files = tests/*
+test_files = $(srcdir)/tests/*
 
 EXTRA_DIST = bootstrap configure.ac COPYING m4 mit-plus-license.txt README.md \
 	version.sh $(addsuffix .in, $(composed_bin_scripts)) \
