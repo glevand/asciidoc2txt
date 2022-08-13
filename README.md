@@ -22,9 +22,9 @@ See the [asciidoc reference](https://docs.asciidoctor.org/asciidoc/latest/syntax
 ## Generate test files
 
 ```
-asciidoctor -v test-resume.adoc
-asciidoctor-pdf -v test-resume.adoc
-asciidoc2txt.sh test-resume.adoc
+asciidoctor -v -D generated test-resume.adoc
+asciidoctor-pdf -v -D generated test-resume.adoc
+asciidoc2txt.sh -o generated/test-resume.txt test-resume.adoc
 ```
 
 ## Licence & Usage
